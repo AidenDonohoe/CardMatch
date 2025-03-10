@@ -1,0 +1,77 @@
+name: CI/CD Pipeline for CardMatch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Staging
+        env:
+          MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
+        run: |
+          npm run build
+          npm run server
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Production
+        env:
+          MONGODB_URI: ${{ secrets.PRODUCTION_MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
+        run: |
+          npm run build
+          npm run server
