@@ -85,9 +85,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Get Previous Stable Tag
+        id: get-tag
+        run: |
+          git fetch --tags
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0)
+          echo "Previous stable tag: $PREVIOUS_TAG"
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
       - name: Rollback to Previous Version
         run: |
-          git checkout <previous-stable-tag>
+          git checkout $PREVIOUS_TAG
           npm install
           npm run build
           npm run server
