@@ -75,3 +75,16 @@ jobs:
         run: |
           npm run build
           npm run server
+
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Rollback to Previous Version
+        run: |
+          git checkout <previous-stable-tag>
+          npm install
+          npm run build
+          npm run server
