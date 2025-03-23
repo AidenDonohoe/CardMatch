@@ -12,6 +12,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,6 +35,8 @@ jobs:
         run: npm install
 
       - name: Run tests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/cardmatch
         run: npm test
       
       - name: Run ESLint
@@ -46,6 +58,16 @@ jobs:
   deploy-staging:
     needs: build
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -55,7 +77,7 @@ jobs:
 
       - name: Deploy to Staging
         env:
-          MONGODB_URI: ${{ secrets.STAGING_MONGODB_URI }}
+          MONGODB_URI: mongodb://localhost:27017/cardmatch
           JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
         run: |
           npm run build
@@ -65,6 +87,16 @@ jobs:
     needs: deploy-staging
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -74,7 +106,7 @@ jobs:
 
       - name: Deploy to Production
         env:
-          MONGODB_URI: ${{ secrets.PRODUCTION_MONGODB_URI }}
+          MONGODB_URI: mongodb://localhost:27017/cardmatch
           JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
         run: |
           npm run build
@@ -84,12 +116,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-production
     if: failure()
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-        
+          fetch-depth: 0  # Fetch the entire history, including tags
+
       - name: Get Previous Stable Tag
         id: get-tag
         run: |
@@ -97,9 +139,10 @@ jobs:
           PREVIOUS_TAG=$(git describe --tags --abbrev=0)
           echo "Previous stable tag: $PREVIOUS_TAG"
           echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+
       - name: Rollback to Previous Version
         env:
-          MONGODB_URI: ${{ secrets.PRODUCTION_MONGODB_URI }}
+          MONGODB_URI: mongodb://localhost:27017/cardmatch
           JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
         run: |
           git checkout $PREVIOUS_TAG
