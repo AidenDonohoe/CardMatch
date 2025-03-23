@@ -86,7 +86,7 @@ jobs:
           JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
         run: |
           npm run build
-          npm run server
+          npm run server &
 
   deploy-production:
     needs: deploy-staging
