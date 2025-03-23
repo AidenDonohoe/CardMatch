@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Register from '../components/Register';
+import Register from '../src/components/Register';
 
 describe('Register', () => {
   it('registers a new user', async () => {
