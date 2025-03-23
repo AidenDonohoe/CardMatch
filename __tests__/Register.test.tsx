@@ -1,6 +1,8 @@
 //Test for proper registration validation
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Register Component', () => {
-  // Tests will be added here
+  it('placeholder test', () => {
+    // Tests will be added here
+  });
 });
