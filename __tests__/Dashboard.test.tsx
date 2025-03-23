@@ -1,6 +1,8 @@
 //Test for dashboard correctly working
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Dashboard Component', () => {
-  // Tests will be added here
+  it('placeholder test', () => {
+    // Tests will be added here
+  });
 });
