@@ -1,6 +1,8 @@
 //Test for recommendation filter properly working
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Filter Component', () => {
-  // Tests will be added here
+  it('placeholder test', () => {
+    // Tests will be added here
+  });
 });
