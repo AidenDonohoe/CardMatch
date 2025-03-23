@@ -94,6 +94,9 @@ jobs:
           echo "Previous stable tag: $PREVIOUS_TAG"
           echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
       - name: Rollback to Previous Version
+        env:
+          MONGODB_URI: ${{ secrets.PRODUCTION_MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
         run: |
           git checkout $PREVIOUS_TAG
           npm install
