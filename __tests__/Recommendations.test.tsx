@@ -1,6 +1,8 @@
 //Test for recommendations
-import { describe } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Recommendations Component', () => {
-  // Tests will be added here
+  it('placeholder test', () => {
+    // Tests will be added here
+  });
 });
