@@ -115,7 +115,7 @@ jobs:
           JWT_SECRET: ${{ secrets.PRODUCTION_JWT_SECRET }}
         run: |
           npm run build
-          npm run server
+          npm run server &
 
   rollback:
     runs-on: ubuntu-latest
@@ -153,4 +153,4 @@ jobs:
           git checkout $PREVIOUS_TAG
           npm install
           npm run build
-          npm run server
+          npm run server &
