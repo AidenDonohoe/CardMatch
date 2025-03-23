@@ -34,6 +34,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Add this step to install ESLint and React-related dependencies
+      - name: Install ESLint and React plugins
+        run: |
+          npm install --save-dev eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh @typescript-eslint/eslint-plugin @typescript-eslint/parser
+
       - name: Run tests
         env:
           MONGODB_URI: mongodb://localhost:27017/cardmatch
