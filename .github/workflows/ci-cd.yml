@@ -63,10 +63,10 @@ jobs:
       - name: Create Sentry Release and Upload Source Maps
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-          SENTRY_ORG: cardmatch-cen3031
-          SENTRY_PROJECT: javascript-react
+          SENTRY_ORG: ${{vars.SENTRY_ORG}}
+          SENTRY_PROJECT: ${{vars.SENTR_PROJECT}}
           SENTRY_ENVIRONMENT: staging
-        run:
+        run:  |
           npm install -g @sentry/cli
           sentry-cli releases new $GITHUB_SHA
           sentry-cli sourcemaps inject --rewrite ./dist
@@ -132,9 +132,9 @@ jobs:
 
       - name: Create Sentry Release and Upload Source Maps (Production)
         env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: cardmatch-cen3031
-          SENTRY_PROJECT: javascript-react
+          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
+          SENTRY_ORG: ${{vars.SENTRY_ORG}}
+          SENTRY_PROJECT: ${{vars.SENTR_PROJECT}}
           SENTRY_ENVIRONMENT: production
         run: |
           npm install -g @sentry/cli
