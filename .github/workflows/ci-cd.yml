@@ -64,7 +64,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
           SENTRY_ORG: ${{vars.SENTRY_ORG}}
-          SENTRY_PROJECT: ${{vars.SENTR_PROJECT}}
+          SENTRY_PROJECT: ${{vars.SENTRY_PROJECT}}
           SENTRY_ENVIRONMENT: staging
         run:  |
           npm install -g @sentry/cli
@@ -134,7 +134,7 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
           SENTRY_ORG: ${{vars.SENTRY_ORG}}
-          SENTRY_PROJECT: ${{vars.SENTR_PROJECT}}
+          SENTRY_PROJECT: ${{vars.SENTRY_PROJECT}}
           SENTRY_ENVIRONMENT: production
         run: |
           npm install -g @sentry/cli
