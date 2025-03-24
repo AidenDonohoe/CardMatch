@@ -60,6 +60,19 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Create Sentry Release and Upload Source Maps
+        env:
+          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
+          SENTRY_ORG: cardmatch-cen3031
+          SENTRY_PROJECT: javascript-react
+          SENTRY_ENVIRONMENT: staging
+        run:
+          npm install -g @sentry/cli
+          sentry-cli releases new $GITHUB_SHA
+          sentry-cli sourcemaps inject --rewrite ./dist
+          sentry-cli sourcemaps upload ../dist --org $SENTRY_ORG --project $SENTRY_PROJECT
+          sentry-cli releases finalize $GITHUB_SHA
+
   deploy-staging:
     needs: build
     runs-on: ubuntu-latest
@@ -116,6 +129,19 @@ jobs:
         run: |
           npm run build
           npm run server &
+
+      - name: Create Sentry Release and Upload Source Maps (Production)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: cardmatch-cen3031
+          SENTRY_PROJECT: javascript-react
+          SENTRY_ENVIRONMENT: production
+        run: |
+          npm install -g @sentry/cli
+          sentry-cli releases new $GITHUB_SHA
+          sentry-cli sourcemaps inject --rewrite ./dist
+          sentry-cli sourcemaps upload ./dist --org $SENTRY_ORG --project $SENTRY_PROJECT
+          sentry-cli releases finalize $GITHUB_SHA
 
   rollback:
     runs-on: ubuntu-latest
