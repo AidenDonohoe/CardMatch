@@ -58,6 +58,8 @@ jobs:
         run: npm install
 
       - name: Build frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN }}
         run: npm run build
 
       - name: Create Sentry Release and Upload Source Maps
