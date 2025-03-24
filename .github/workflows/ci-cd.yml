@@ -72,7 +72,7 @@ jobs:
           npm install -g @sentry/cli
           sentry-cli releases new $GITHUB_SHA
           sentry-cli sourcemaps inject --rewrite ./dist
-          sentry-cli sourcemaps upload ../dist --org $SENTRY_ORG --project $SENTRY_PROJECT
+          sentry-cli sourcemaps upload ./dist --org $SENTRY_ORG --project $SENTRY_PROJECT
           sentry-cli releases finalize $GITHUB_SHA
 
   deploy-staging:
