@@ -1,11 +1,19 @@
 import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { 
+      name, 
+      email, 
+      password, 
+      preferences, 
+      extraPreferences,
+      rankedPref 
+    } = req.body;
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
@@ -16,15 +24,22 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // Create user
+    // Create user with preferences
     const user = await User.create({
       name,
       email,
-      password
+      password,
+      preferences,
+      extraPreferences,
+      rankedPref
     });
 
     // Generate token
-    const token = user.getSignedJwtToken();
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
 
     res.status(201).json({
       success: true,
@@ -32,7 +47,10 @@ export const register = async (req, res, next) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        preferences: user.preferences,
+        extraPreferences: user.extraPreferences,
+        rankedPref: user.rankedPref
       }
     });
   } catch (error) {
@@ -74,7 +92,11 @@ export const login = async (req, res, next) => {
     }
 
     // Generate token
-    const token = user.getSignedJwtToken();
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
 
     res.status(200).json({
       success: true,
@@ -82,7 +104,10 @@ export const login = async (req, res, next) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        preferences: user.preferences,
+        extraPreferences: user.extraPreferences,
+        rankedPref: user.rankedPref
       }
     });
   } catch (error) {
@@ -99,7 +124,14 @@ export const getMe = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: user
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        preferences: user.preferences,
+        extraPreferences: user.extraPreferences,
+        rankedPref: user.rankedPref
+      }
     });
   } catch (error) {
     next(error);

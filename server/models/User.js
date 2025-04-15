@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -27,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   preferences: {
     categories: [{
       type: String,
-      enum: ['Travel', 'Cash Back', 'Business', 'Student', 'Rewards', 'Low Interest']
+      enum: ['Travel', 'Cash Back', 'Business', 'Student', 'Rewards', 'Low Interest', 'Building Credit']
     }],
     annualFeePreference: {
       type: String,
@@ -38,6 +37,46 @@ const UserSchema = new mongoose.Schema({
       type: String,
       enum: ['Excellent', 'Good', 'Fair', 'Poor', 'Building'],
       default: 'Good'
+    }
+  },
+  extraPreferences: {
+    signBonus: {
+      type: Boolean,
+      default: false
+    },
+    avgAPR: {
+      type: Number,
+      default: null
+    },
+    rewardRate: {
+      type: String,
+      default: null
+    }
+  },
+  rankedPref: {
+    categories: {
+      type: Number,
+      default: 3
+    },
+    annualFeePreference: {
+      type: Number,
+      default: 2
+    },
+    creditScoreRange: {
+      type: Number,
+      default: 1
+    },
+    signBonus: {
+      type: Number,
+      default: 0
+    },
+    avgAPR: {
+      type: Number,
+      default: 0
+    },
+    rewardRate: {
+      type: Number,
+      default: 0
     }
   },
   createdAt: {
@@ -57,15 +96,6 @@ UserSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
-
-// Sign JWT and return
-UserSchema.methods.getSignedJwtToken = function() {
-  return jwt.sign(
-    { id: this._id },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
-  );
-};
 
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function(enteredPassword) {
