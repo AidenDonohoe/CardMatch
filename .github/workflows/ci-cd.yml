@@ -34,7 +34,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Add this step to install ESLint and React-related dependencies
       - name: Install ESLint and React plugins
         run: |
           npm install --save-dev eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh @typescript-eslint/eslint-plugin @typescript-eslint/parser
@@ -58,22 +57,7 @@ jobs:
         run: npm install
 
       - name: Build frontend
-        env:
-          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN }}
         run: npm run build
-
-      - name: Create Sentry Release and Upload Source Maps
-        env:
-          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-          SENTRY_ORG: ${{vars.SENTRY_ORG}}
-          SENTRY_PROJECT: ${{vars.SENTRY_PROJECT}}
-          SENTRY_ENVIRONMENT: staging
-        run:  |
-          npm install -g @sentry/cli
-          sentry-cli releases new $GITHUB_SHA
-          sentry-cli sourcemaps inject --rewrite ./dist
-          sentry-cli sourcemaps upload ./dist --org $SENTRY_ORG --project $SENTRY_PROJECT
-          sentry-cli releases finalize $GITHUB_SHA
 
   deploy-staging:
     needs: build
@@ -132,19 +116,6 @@ jobs:
           npm run build
           npm run server &
 
-      - name: Create Sentry Release and Upload Source Maps (Production)
-        env:
-          SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
-          SENTRY_ORG: ${{vars.SENTRY_ORG}}
-          SENTRY_PROJECT: ${{vars.SENTRY_PROJECT}}
-          SENTRY_ENVIRONMENT: production
-        run: |
-          npm install -g @sentry/cli
-          sentry-cli releases new $GITHUB_SHA
-          sentry-cli sourcemaps inject --rewrite ./dist
-          sentry-cli sourcemaps upload ./dist --org $SENTRY_ORG --project $SENTRY_PROJECT
-          sentry-cli releases finalize $GITHUB_SHA
-
   rollback:
     runs-on: ubuntu-latest
     needs: deploy-production
@@ -163,7 +134,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch the entire history, including tags
+          fetch-depth: 0
 
       - name: Get Previous Stable Tag
         id: get-tag
