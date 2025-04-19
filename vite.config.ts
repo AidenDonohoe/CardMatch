@@ -21,13 +21,7 @@ export default defineConfig({
 
   test: {
     environment: 'jsdom',
-    globals: true, 
-    setupFiles: './scr/test/setup.ts',
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src')
-      }
-    }
+    globals: true,
     coverage: {
       provider: 'v8', 
       reporter: ['text', 'json', 'html'], 
